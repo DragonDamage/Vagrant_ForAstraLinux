@@ -1,9 +1,9 @@
 # Vagrant
-VagrantFile:
-```ruby
+### VagrantFile:
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
+```ruby
 Vagrant.configure("2") do |config|
   config.vm.define "host01" do |host01|
    host01.vm.box = "generic/ubuntu2004"
