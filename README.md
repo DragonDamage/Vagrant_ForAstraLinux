@@ -1,6 +1,6 @@
 # Vagrant
 VagrantFile:
-
+```ruby
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -29,9 +29,9 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
    end
 end
+```
 
-
-
+```ruby
 playbook.yml:
 - hosts: all
   become: true
@@ -112,3 +112,4 @@ playbook.yml:
         enabled: yes
         state: started
         name: node_exporter.service
+```
