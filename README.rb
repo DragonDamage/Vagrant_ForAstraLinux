@@ -1,8 +1,8 @@
 # Vagrant
-### VagrantFile:
+VagrantFile:
 
--*- mode: ruby -*-
-vi: set ft=ruby :
+#-*- mode: ruby -*-
+#vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
   config.vm.define "host01" do |host01|
@@ -33,6 +33,7 @@ end
 
 
 playbook.yml:
+
 - hosts: all
   become: true
   tasks:
