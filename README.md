@@ -1,5 +1,5 @@
 # Vagrant
-'VagrantFile:'
+VagrantFile:
 
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
@@ -30,7 +30,9 @@ Vagrant.configure("2") do |config|
    end
 end
 
-'playbook.yml'
+
+
+playbook.yml:
 - hosts: all
   become: true
   tasks:
