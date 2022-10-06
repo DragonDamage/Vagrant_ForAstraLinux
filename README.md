@@ -35,9 +35,9 @@ end
   become: true
   tasks:
     - name: Install unzip
-     apt: name=unzip state=present
-     - name: Install Python 3
-     apt: pkg=python3-minimal state=installed
+      apt: name=unzip state=present
+    - name: Install Python 3
+      apt: pkg=python3-minimal state=installed
 
     - name: Install aptitude using apt
       apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
@@ -78,9 +78,9 @@ end
       #  docker-compose
     - name: Install docker-compose
       get_url: 
-      url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
-      dest: /usr/local/bin/docker-compose
-      mode: 'u+x,g+x'
+        url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
       #  exporter + prometheus
     - name: create opt directory for prometheus
       file:
