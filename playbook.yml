@@ -1,79 +1,46 @@
-- hosts: all
-  become: true
+---
+- name: Install Docker and Docker Compose
+  hosts: all
+  become: yes
   tasks:
-    - name: Install unzip
-     apt: name=unzip state=present
-     - name: Install Python 3
-     apt: pkg=python3-minimal state=installed
+  - name: Update package index
+    apt:
+      update_cache: yes
+  - name: Install Docker
+    apt:
+      name: docker.io
+      state: latest
+  - name: Install Docker Compose
+    command: sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    become: yes
+    environment:
+      PATH: /usr/local/bin:$PATH
+  - name: Add execute permission to Docker Compose binary
+    command: sudo chmod +x /usr/local/bin/docker-compose
+    become: yes
 
-    - name: Install aptitude using apt
-      apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+- name: Install Node Exporter
+  hosts: all
+  become: yes
+  tasks:
+  - name: Download Node Exporter
+    command: sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.0.0/node_exporter-1.0.0.linux-amd64.tar.gz
+    become: yes
+  - name: Extract Node Exporter
+    command: sudo tar -xvzf node_exporter-1.0.0.linux-amd64.tar.gz
+    become: yes
+  - name: Start Node Exporter
+    command: sudo ./node_exporter-1.0.0.linux-amd64/node_exporter &
+    become: yes
+    args:
+      chdir: node_exporter-1.0.0.linux-amd64
 
-    - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
-
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker Repository
-      apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu bionic stable
-        state: present
-
-    - name: Update apt and install docker-ce
-      apt: update_cache=yes name=docker-ce state=latest
-
-    - name: Install Docker Module for Python
-      pip:
-        name: docker
-
-    - name: Pull default Docker image
-      docker_image:
-        name: "{{ default_container_image }}"
-        source: pull
-
-    - name: Create default containers
-      docker_container:
-        name: "{{ default_container_name }}{{ item }}"
-        image: "{{ default_container_image }}"
-        command: "{{ default_container_command }}"
-        state: present
-      with_sequence: count={{ create_containers }}
-      #  docker-compose
-    - name: Install docker-compose
-      get_url: 
-      url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
-      dest: /usr/local/bin/docker-compose
-      mode: 'u+x,g+x'
-      #  exporter + prometheus
-    - name: create opt directory for prometheus
-      file:
-        path: /opt/prometheus
-        state: directory
-    - name: download node exporter
-      get_url:
-        url: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
-        dest: /opt/prometheus
-    - name: unarchive node exporter
-      unarchive:
-        remote_src: yes
-        src: /opt/prometheus/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
-        dest: /opt/prometheus
-    - name: create symlink to node exporter
-      file:
-        path: /usr/bin/node_exporter
-        state: link
-        src: /opt/prometheus/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter
-    - name: install unit file to systemd
-      template:
-        src: node_exporter.service
-        dest: /etc/systemd/system/node_exporter.service
-    - name: configure systemd to use service
-      systemd:
-        daemon_reload: yes
-        enabled: yes
-        state: started
-        name: node_exporter.service
+- name: Start Docker Compose
+  hosts: all
+  become: yes
+  tasks:
+  - name: Start Prometheus and Grafana
+    command: docker-compose up -d
+    become: yes
+    args:
+      chdir: /vagrant
