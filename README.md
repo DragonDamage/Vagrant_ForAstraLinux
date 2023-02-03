@@ -29,8 +29,8 @@ end
 ```
 
 
-## playbook.yaml:
-```ruby
+## playbook.yml:
+```yml
 ---
 - name: Install Docker and Docker Compose
   hosts: all
@@ -77,4 +77,22 @@ end
     become: yes
     args:
       chdir: /vagrant
+```
+
+
+## docker-compose.yml:
+```yml
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus:v2.21.0
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana:7.3.0
+    volumes:
+      - ./grafana:/var/lib/
 ```
