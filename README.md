@@ -1,9 +1,8 @@
 # Vagrant
 ## VagrantFile:
-
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
+```ruby
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/ubuntu2004"
   config.vm.network "forwarded_port", guest: 3000, host: 3000
